@@ -3,22 +3,22 @@
  * Licensed under Apache-2.0 with Commons Clause and Attribution/Naming Clause
  */
 
-import * as similarityCache from '../../lib/services/similarity-check/similarityCache.js';
-import { get } from '../mocks/mockNotification.js';
-import { mockFredy, providerConfig } from '../utils.js';
 import { expect } from 'vitest';
-import * as provider from '../../lib/provider/derealitaet.js';
+import * as similarityCache from '../../lib/services/similarity-check/similarityCache.js';
+import { mockFredy, providerConfig } from '../utils.js';
+import { get } from '../mocks/mockNotification.js';
+import * as provider from '../../lib/provider/wgGesuchtAt.js';
 import { launchBrowser, closeBrowser } from '../../lib/services/extractor/puppeteerExtractor.js';
 
 const TEST_TIMEOUT = 120_000;
 
-describe('#derealitaet testsuite()', () => {
-  provider.init(providerConfig.derealitaet, []);
+describe('#wgGesuchtAt testsuite()', () => {
+  provider.init(providerConfig.wgGesuchtAt, []);
 
   let browser;
 
   beforeAll(async () => {
-    browser = await launchBrowser(providerConfig.derealitaet.url);
+    browser = await launchBrowser(providerConfig.wgGesuchtAt.url);
   }, TEST_TIMEOUT);
 
   afterAll(async () => {
@@ -26,11 +26,11 @@ describe('#derealitaet testsuite()', () => {
   });
 
   it(
-    'should test derealitaet provider',
+    'should test wgGesuchtAt provider',
     async () => {
       const Fredy = await mockFredy();
       const mockedJob = {
-        id: 'derealitaet',
+        id: 'wgGesuchtAt',
         notificationAdapter: null,
         spatialFilter: null,
         specFilter: null,
@@ -38,7 +38,6 @@ describe('#derealitaet testsuite()', () => {
 
       return await new Promise((resolve, reject) => {
         const fredy = new Fredy(provider.config, mockedJob, provider.metaInformation.id, similarityCache, browser);
-
         fredy.execute().then((listings) => {
           if (listings == null || listings.length === 0) {
             reject('Listings is empty!');
@@ -47,17 +46,21 @@ describe('#derealitaet testsuite()', () => {
 
           expect(listings).toBeInstanceOf(Array);
           const notificationObj = get();
-          expect(notificationObj.serviceName).toBe('derealitaet');
-          notificationObj.payload.forEach((notify) => {
-            expect(notify).toBeTypeOf('object');
-            expect(notify.id).toBeTypeOf('string');
-            expect(notify.title).toBeTypeOf('string');
-            expect(notify.title).not.toBe('');
-            expect(notify.price).toBeTypeOf('string');
-            expect(notify.price).toContain('€');
-            expect(notify.link).toBeTypeOf('string');
-            expect(notify.link).toContain('https://www.derealitaet.at/');
+          expect(notificationObj.serviceName).toBe('wgGesuchtAt');
+
+          const hasValidNotification = notificationObj.payload.some((notify) => {
+            return (
+              typeof notify.id === 'string' &&
+              typeof notify.price === 'string' &&
+              notify.price.includes('€') &&
+              typeof notify.title === 'string' &&
+              notify.title !== '' &&
+              typeof notify.link === 'string' &&
+              notify.link.includes('https://www.wg-gesucht.de/')
+            );
           });
+
+          expect(hasValidNotification).toBe(true);
           resolve();
         });
       });

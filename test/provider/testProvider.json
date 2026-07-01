@@ -61,16 +61,12 @@
     "url": "https://www.willhaben.at/iad/immobilien/mietwohnungen/wien",
     "enabled": true
   },
-  "derealitaet": {
-    "url": "https://www.derealitaet.at/suche/miete/wohnung/wien",
-    "enabled": true
-  },
   "immoscoutAt": {
     "url": "https://www.immobilienscout24.at/regional/oesterreich/immobilien",
     "enabled": true
   },
-  "wgZimmerAt": {
-    "url": "https://www.wg-zimmer.at/wohnungen/wien",
+  "wgGesuchtAt": {
+    "url": "https://www.wg-gesucht.at/wohnungen-in-Wien.1.2.1.0.html",
     "enabled": true
   }
 }

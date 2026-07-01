@@ -88,7 +88,7 @@ export async function readFixture(url) {
 export function buildFetchMock() {
   let immoscoutListData = null;
   let immoscoutDetailData = null;
-  let willhabenData = null;
+  let willhabenData = null; // HTML string
 
   return async (url) => {
     const urlStr = String(url);
@@ -112,12 +112,12 @@ export function buildFetchMock() {
       return { ok: true, status: 200, json: () => Promise.resolve(immoscoutDetailData) };
     }
 
-    if (urlStr.includes('www.willhaben.at/iad/searchad/v1/ads/search')) {
+    if (urlStr.includes('www.willhaben.at')) {
       if (!willhabenData) {
-        const raw = await tryReadFile(path.join(FIXTURES_DIR, 'willhaben.json'));
-        willhabenData = raw ? JSON.parse(raw) : { advertSummaryList: { advertSummary: [] } };
+        willhabenData = await tryReadFile(path.join(FIXTURES_DIR, 'willhaben.html'));
       }
-      return { ok: true, status: 200, json: () => Promise.resolve(willhabenData) };
+      const body = willhabenData ?? '';
+      return { ok: true, status: 200, text: () => Promise.resolve(body) };
     }
 
     throw new Error(`Network request blocked in offline mode: ${urlStr}`);

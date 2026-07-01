@@ -33,8 +33,7 @@ This is a community fork of Fredy extended with Austrian real estate providers a
 |---|---|---|---|
 | Willhaben | `willhaben` | JSON API | https://www.willhaben.at/ |
 | ImmoScout AT | `immoscoutAt` | Puppeteer + JSON-LD | https://www.immobilienscout24.at/ |
-| WG-Zimmer AT | `wgZimmerAt` | Puppeteer | https://www.wg-zimmer.at/ |
-| DerRealitaet | `derealitaet` | Puppeteer | https://www.derealitaet.at/ |
+| WG-Gesucht AT | `wgGesuchtAt` | Puppeteer | https://www.wg-gesucht.at/ |
 
 ### DACH geocoding & map
 
