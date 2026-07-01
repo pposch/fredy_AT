@@ -341,7 +341,7 @@
   "settings.proxyUrlPlaceholder": "http://benutzer:passwort@host:port",
   "settings.homeAddress": "Heimatadresse",
   "settings.homeAddressHelp": "Wird zur Berechnung der Entfernung zwischen deinem Standort und jedem Inserat verwendet. Eine Aktualisierung berechnet die Entfernungen für alle aktiven Inserate neu.",
-  "settings.homeAddressPlaceholder": "Heimatadresse eingeben",
+  "settings.homeAddressPlaceholder": "Wien, Mariahilfer Straße 1...",
   "settings.homeAddressGeoError": "Adresse gefunden, konnte aber nicht genau geokodiert werden.",
   "settings.providerDetails": "Anbieter-Details",
   "settings.providerDetailsHelp": "Zusätzliche Details (Beschreibung, Attribute, Maklerinfos) für Inserate abrufen. Erfordert einen zusätzlichen API-Aufruf pro Inserat.",

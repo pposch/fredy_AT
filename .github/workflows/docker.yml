@@ -5,11 +5,11 @@ on:
     branches:
       - 'master'
     tags:
-      - '*'
+      - 'v*'
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
+  IMAGE_NAME: pposch/fredy-at
 
 jobs:
   build-and-push-image:
@@ -24,18 +24,18 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
+        uses: docker/setup-qemu-action@v3
         with:
           platforms: linux/amd64,linux/arm64
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@v3
 
       - name: Log in to the Container registry
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
@@ -43,12 +43,17 @@ jobs:
 
       - name: Extract metadata (tags, labels) for Docker
         id: meta
-        uses: docker/metadata-action@v4
+        uses: docker/metadata-action@v5
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=raw,value=latest,enable={{is_default_branch}}
+            type=sha,prefix=,format=short
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
 
       - name: Build and push Docker image
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v6
         with:
           context: .
           push: true
@@ -58,7 +63,7 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      # Test container health with docker compose
+      # Test container health with docker compose (uses root docker-compose.yml)
       - name: Test container with docker compose
         run: |
           echo "Starting container with docker compose..."
@@ -71,26 +76,25 @@ jobs:
           SECONDS_ELAPSED=0
           HEALTH_CHECK_INTERVAL=5
           TOTAL_DURATION=30
-          
+
           while [ $SECONDS_ELAPSED -lt $TOTAL_DURATION ]; do
             HEALTH_STATUS=$(docker inspect --format='{{.State.Health.Status}}' fredy 2>/dev/null || echo "not_found")
             CONTAINER_STATUS=$(docker inspect --format='{{.State.Status}}' fredy 2>/dev/null || echo "not_found")
             echo "[$SECONDS_ELAPSED/$TOTAL_DURATION sec] Container: $CONTAINER_STATUS, Health: $HEALTH_STATUS"
-            
-            # Check if container is not running or unhealthy
+
             if [ "$CONTAINER_STATUS" != "running" ]; then
               echo "Container stopped running! Status: $CONTAINER_STATUS"
               docker compose logs fredy
               exit 1
             fi
-            
+
             if [ "$HEALTH_STATUS" = "unhealthy" ]; then
               echo "Container is unhealthy!"
               docker compose logs fredy
               docker inspect --format='{{json .State.Health}}' fredy | jq
               exit 1
             fi
-            
+
             sleep $HEALTH_CHECK_INTERVAL
             SECONDS_ELAPSED=$((SECONDS_ELAPSED + HEALTH_CHECK_INTERVAL))
           done

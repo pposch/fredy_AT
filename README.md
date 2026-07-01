@@ -23,6 +23,60 @@
 
 
 
+## 🇦🇹 Austrian Fork — fredy-AT
+
+This is a community fork of Fredy extended with Austrian real estate providers and DACH-wide geocoding support. It is published as a separate Docker image and receives all upstream fixes via regular rebasing.
+
+### Added Austrian providers
+
+| Provider | ID | Type | URL |
+|---|---|---|---|
+| Willhaben | `willhaben` | JSON API | https://www.willhaben.at/ |
+| ImmoScout AT | `immoscoutAt` | Puppeteer + JSON-LD | https://www.immobilienscout24.at/ |
+| WG-Zimmer AT | `wgZimmerAt` | Puppeteer | https://www.wg-zimmer.at/ |
+| DerRealitaet | `derealitaet` | Puppeteer | https://www.derealitaet.at/ |
+
+### DACH geocoding & map
+
+- Nominatim geocoding and autocomplete now cover **DE, AT, CH** (`countrycodes=de,at,ch`)
+- Default map center is the geographic centre of the DACH region (Austria)
+- Map bounds cover the full DACH region, not just Germany
+
+### Quick start with Docker (Austrian fork)
+
+```bash
+docker run -d --name fredy \
+  -v fredy_conf:/conf \
+  -v fredy_db:/db \
+  -p 9998:9998 \
+  ghcr.io/pposch/fredy-at:latest
+```
+
+### Production deployment (nginx-proxy-manager)
+
+```bash
+# 1. Create the shared Docker network if it doesn't exist yet
+docker network create web
+
+# 2. Prepare data directories and config
+mkdir -p ./fredy/conf ./fredy/db
+curl -o ./fredy/conf/config.json \
+  https://raw.githubusercontent.com/pposch/fredy_AT/master/conf/config.json
+
+# 3. Start the stack
+cd deployment
+docker compose pull
+docker compose up -d
+```
+
+Optional `.env` file in the `deployment/` directory:
+
+```env
+PROXY_URL=http://user:pass@proxyhost:3128
+```
+
+------------------------------------------------------------------------
+
 # Fredy 🏡 - Your Self-Hosted Real Estate Finder for Germany
 
 Finding an apartment or house in Germany can be stressful and

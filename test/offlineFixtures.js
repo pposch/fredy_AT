@@ -81,34 +81,43 @@ export async function readFixture(url) {
 }
 
 /**
- * Returns a fetch replacement that intercepts immoscout mobile API calls and
- * serves pre-downloaded JSON fixtures. Throws for any other URL to prevent
+ * Returns a fetch replacement that intercepts API calls for fetch-based providers
+ * and serves pre-downloaded JSON fixtures. Throws for any other URL to prevent
  * accidental live network traffic in offline mode.
  */
 export function buildFetchMock() {
-  let listData = null;
-  let detailData = null;
+  let immoscoutListData = null;
+  let immoscoutDetailData = null;
+  let willhabenData = null;
 
   return async (url) => {
     const urlStr = String(url);
 
     if (urlStr.includes('api.mobile.immobilienscout24.de/search/list')) {
-      if (!listData) {
+      if (!immoscoutListData) {
         const raw = await tryReadFile(path.join(FIXTURES_DIR, 'immoscout_list.json'));
-        listData = raw ? JSON.parse(raw) : { resultListItems: [] };
+        immoscoutListData = raw ? JSON.parse(raw) : { resultListItems: [] };
       }
 
       const requestedType = new URL(urlStr).searchParams.get('realestatetype');
-      const responseData = withRealEstateType(listData, requestedType);
+      const responseData = withRealEstateType(immoscoutListData, requestedType);
       return { ok: true, status: 200, json: () => Promise.resolve(responseData) };
     }
 
     if (urlStr.includes('api.mobile.immobilienscout24.de/expose/')) {
-      if (!detailData) {
+      if (!immoscoutDetailData) {
         const raw = await tryReadFile(path.join(FIXTURES_DIR, 'immoscout_detail.json'));
-        detailData = raw ? JSON.parse(raw) : { sections: [], contact: {} };
+        immoscoutDetailData = raw ? JSON.parse(raw) : { sections: [], contact: {} };
       }
-      return { ok: true, status: 200, json: () => Promise.resolve(detailData) };
+      return { ok: true, status: 200, json: () => Promise.resolve(immoscoutDetailData) };
+    }
+
+    if (urlStr.includes('www.willhaben.at/iad/searchad/v1/ads/search')) {
+      if (!willhabenData) {
+        const raw = await tryReadFile(path.join(FIXTURES_DIR, 'willhaben.json'));
+        willhabenData = raw ? JSON.parse(raw) : { advertSummaryList: { advertSummary: [] } };
+      }
+      return { ok: true, status: 200, json: () => Promise.resolve(willhabenData) };
     }
 
     throw new Error(`Network request blocked in offline mode: ${urlStr}`);
