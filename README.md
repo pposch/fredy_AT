@@ -231,7 +231,7 @@ On a **server / VPS the requests usually originate from a datacenter IP**, and p
 
 ### The fix: a residential proxy
 
-A **residential proxy** routes Fredy's browser through the internet connection of a real household, so the provider sees a "normal user" IP instead of a datacenter. For German portals, use a **German (DE) residential** (or mobile/4G) proxy. Plain VPNs and **datacenter proxies do not help** here, they share the same bad reputation as your server.
+A **residential proxy** routes Fredy's browser through the internet connection of a real household, so the provider sees a "normal user" IP instead of a datacenter. For German portals, use a **German (DE) residential** (or mobile/4G) proxy; for Austrian portals (e.g. `immoscoutAt`, `willhaben`), use an **Austrian (AT) residential** proxy instead. Plain VPNs and **datacenter proxies do not help** here, they share the same bad reputation as your server.
 
 **Configure it** under **Settings → Execution → Proxy URL**. Supported formats:
 
@@ -240,7 +240,7 @@ http://user:pass@host:port
 socks5://user:pass@host:port
 ```
 
-Leave the field empty to disable. The proxy applies to all headless-browser providers and takes effect on the next job run (no restart needed). Immoscout uses a separate mobile API and is not affected.
+Leave the field empty to disable. The proxy applies to all headless-browser providers (including `immoscoutAt`) and takes effect on the next job run (no restart needed). `immoscout` (DE) and `willhaben` use a mobile/API endpoint instead of a headless browser and are not affected.
 
 ### Where to get a residential proxy
 
@@ -255,7 +255,7 @@ Residential proxies are a paid service (usually billed per GB, Fredy's traffic i
 | [Bright Data](https://brightdata.com) | Largest pool, most features, higher complexity/price |
 | [Oxylabs](https://oxylabs.io) | Enterprise-grade, larger plans |
 
-This is not an endorsement, pick whatever fits your budget. For low-volume use like Fredy, a pay-as-you-go plan (e.g. IPRoyal) or a cheap entry tier (e.g. Webshare) is usually plenty. Make sure to select **Germany** as the proxy location and keep the search interval reasonable (the higher the interval, the less you look like a bot).
+This is not an endorsement, pick whatever fits your budget. For low-volume use like Fredy, a pay-as-you-go plan (e.g. IPRoyal) or a cheap entry tier (e.g. Webshare) is usually plenty. Make sure to select **Germany** (or **Austria** for `immoscoutAt`/`willhaben`) as the proxy location and keep the search interval reasonable (the higher the interval, the less you look like a bot).
 
 ## Analytics
 

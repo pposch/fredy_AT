@@ -12,7 +12,7 @@ describe('services/jobs/jobExecutionService', () => {
   let calls;
   let state;
 
-  async function initService() {
+  async function initService({ providers = [], proxyUrl = '' } = {}) {
     const root = (await import('node:path')).resolve('.');
     const svcPath = root + '/lib/services/jobs/jobExecutionService.js';
     const busPath = root + '/lib/services/events/event-bus.js';
@@ -23,6 +23,9 @@ describe('services/jobs/jobExecutionService', () => {
     const utilsPath = root + '/lib/utils.js';
     const loggerPath = root + '/lib/services/logger.js';
     const notifyPath = root + '/lib/notification/notify.js';
+    const pipelinePath = root + '/lib/FredyPipelineExecutioner.js';
+    const puppeteerExtractorPath = root + '/lib/services/extractor/puppeteerExtractor.js';
+    const similarityCachePath = root + '/lib/services/similarity-check/similarityCache.js';
 
     vi.resetModules();
     vi.doMock(busPath, () => ({ bus }));
@@ -36,7 +39,7 @@ describe('services/jobs/jobExecutionService', () => {
       getUser: (id) => state.users.find((u) => u.id === id) || null,
     }));
     vi.doMock(settingsStoragePath, () => ({
-      getSettings: async () => ({}),
+      getSettings: async () => ({ proxyUrl }),
     }));
     vi.doMock(brokerPath, () => ({
       sendToUsers: (...args) => calls.sent.push(args),
@@ -50,6 +53,24 @@ describe('services/jobs/jobExecutionService', () => {
       return { default: m };
     });
     vi.doMock(notifyPath, () => ({ send: async () => [] }));
+    vi.doMock(similarityCachePath, () => ({ checkAndAddEntry: () => false }));
+    vi.doMock(pipelinePath, () => ({
+      default: class FakeFredyPipelineExecutioner {
+        constructor(providerConfig, job, providerId, similarityCache, browser) {
+          calls.pipelineRuns.push({ providerId, browser });
+        }
+        execute() {
+          return Promise.resolve();
+        }
+      },
+    }));
+    vi.doMock(puppeteerExtractorPath, () => ({
+      launchBrowser: (...args) => {
+        calls.launchBrowser.push(args);
+        return Promise.resolve({ connected: true, browserId: args[1] });
+      },
+      closeBrowser: () => Promise.resolve(),
+    }));
     vi.doMock(root + '/lib/services/jobs/run-state.js', () => ({
       isRunning: () => false,
       markRunning: (id) => {
@@ -60,13 +81,13 @@ describe('services/jobs/jobExecutionService', () => {
     }));
 
     const mod = await import(svcPath);
-    mod.initJobExecutionService({ providers: [], settings: { demoMode: false }, intervalMs: 0 });
+    mod.initJobExecutionService({ providers, settings: { demoMode: false }, intervalMs: 0 });
     return mod;
   }
 
   beforeEach(() => {
     bus = new EventEmitter();
-    calls = { sent: [], markRunning: [], lastRunUpdates: [] };
+    calls = { sent: [], markRunning: [], lastRunUpdates: [], launchBrowser: [], pipelineRuns: [] };
     state = {
       jobsById: {},
       jobsList: [],
@@ -138,5 +159,58 @@ describe('services/jobs/jobExecutionService', () => {
     expect(update.id).toBe('j1');
     expect(update.timestamp).toBeGreaterThanOrEqual(before);
     expect(update.timestamp).toBeLessThanOrEqual(after);
+  });
+
+  it('launches a proxied browser for a provider with a custom getListings that opts in via usesPuppeteer', async () => {
+    const provider = {
+      metaInformation: { id: 'immoscoutAt' },
+      config: { url: 'https://example.at', getListings: async () => [], usesPuppeteer: true },
+      init: () => {},
+    };
+    state.jobsById['j1'] = {
+      id: 'j1',
+      enabled: true,
+      userId: 'u1',
+      provider: [{ id: 'immoscoutAt' }],
+    };
+    state.jobsList = [state.jobsById['j1']];
+    state.users = [{ id: 'u1', isAdmin: false }];
+
+    await initService({ providers: [provider], proxyUrl: 'http://user:pass@host:1234' });
+
+    bus.emit('jobs:runOne', { jobId: 'j1' });
+    await new Promise((r) => setTimeout(r, 0));
+
+    expect(calls.launchBrowser.length).toBe(1);
+    const [, options] = calls.launchBrowser[0];
+    expect(options).toEqual({ proxyUrl: 'http://user:pass@host:1234' });
+    expect(calls.pipelineRuns.length).toBe(1);
+    expect(calls.pipelineRuns[0].providerId).toBe('immoscoutAt');
+    expect(calls.pipelineRuns[0].browser).toBeTruthy();
+  });
+
+  it('does not launch a browser for a provider using the plain fetch/API flow', async () => {
+    const provider = {
+      metaInformation: { id: 'willhaben' },
+      config: { url: 'https://example.at', getListings: async () => [] },
+      init: () => {},
+    };
+    state.jobsById['j1'] = {
+      id: 'j1',
+      enabled: true,
+      userId: 'u1',
+      provider: [{ id: 'willhaben' }],
+    };
+    state.jobsList = [state.jobsById['j1']];
+    state.users = [{ id: 'u1', isAdmin: false }];
+
+    await initService({ providers: [provider], proxyUrl: 'http://user:pass@host:1234' });
+
+    bus.emit('jobs:runOne', { jobId: 'j1' });
+    await new Promise((r) => setTimeout(r, 0));
+
+    expect(calls.launchBrowser.length).toBe(0);
+    expect(calls.pipelineRuns.length).toBe(1);
+    expect(calls.pipelineRuns[0].browser).toBeFalsy();
   });
 });
