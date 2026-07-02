@@ -12,6 +12,10 @@
     "url": "https://www.immowelt.de/classified-search?distributionTypes=Buy,Buy_Auction,Compulsory_Auction&estateTypes=House,Apartment&locations=AD08DE2350",
     "enabled": true
   },
+  "immoweltAt": {
+    "url": "https://www.immowelt.at/classified-search?distributionTypes=Rent&estateTypes=Apartment&locations=AD02AT1",
+    "enabled": true
+  },
   "immoscout": {
     "url": "https://www.immobilienscout24.de/Suche/de/nordrhein-westfalen/duesseldorf/wohnung-mieten?enteredFrom=one_step_search",
     "enabled": true
