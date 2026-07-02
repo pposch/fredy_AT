@@ -43,7 +43,8 @@ describe('#willhaben provider testsuite()', () => {
             typeof notify.title === 'string' &&
             notify.title !== '' &&
             typeof notify.link === 'string' &&
-            notify.link.includes('https://www.willhaben.at/') &&
+            // the "iad" segment is required or the ad detail page 404s (verified live)
+            notify.link.startsWith('https://www.willhaben.at/iad/') &&
             typeof notify.address === 'string'
           );
         });
