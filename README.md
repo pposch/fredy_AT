@@ -23,6 +23,57 @@
   <img src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fghcr-badge.elias.eu.org%2Fapi%2Forangecoding%2Ffredy%2Ffredy&query=%24.downloadCount&label=Docker%20Pulls" alt="Docker Pulls" />
 </p>
 
+## 🇦🇹 Austrian Fork — fredy-AT
+
+This is a community fork of Fredy with additional Austrian real estate providers. It is published
+as a separate Docker image and receives all upstream changes via regular rebasing.
+
+Upstream Fredy already covers willhaben, Immoscout Österreich, immowelt.at and DACH-wide geocoding.
+This fork adds on top:
+
+| Provider | ID | URL |
+|---|---|---|
+| Kleinanzeigen AT | `kleinanzeigenAt` | https://www.kleinanzeigen.at/ |
+| WG-Gesucht AT | `wgGesuchtAt` | https://www.wg-gesucht.at/ |
+
+For Austrian portals, use an **Austrian (AT) residential** proxy if your server gets blocked (see
+[Providers & scraping](doc/providers.md)).
+
+### Quick start with Docker (Austrian fork)
+
+```bash
+docker run -d --name fredy \
+  -v fredy_conf:/conf \
+  -v fredy_db:/db \
+  -p 9998:9998 \
+  ghcr.io/pposch/fredy-at:latest
+```
+
+### Production deployment (nginx-proxy-manager)
+
+```bash
+# 1. Create the shared Docker network if it doesn't exist yet
+docker network create web
+
+# 2. Prepare data directories and config
+mkdir -p ./fredy/conf ./fredy/db
+curl -o ./fredy/conf/config.json \
+  https://raw.githubusercontent.com/pposch/fredy_AT/master/conf/config.json
+
+# 3. Start the stack
+cd deployment
+docker compose pull
+docker compose up -d
+```
+
+Optional `.env` file in the `deployment/` directory:
+
+```env
+PROXY_URL=http://user:pass@proxyhost:3128
+```
+
+------------------------------------------------------------------------
+
 # Fredy 🏡 - Your Self-Hosted Real Estate Finder for Europe
 
 **Fredy** watches **29 real estate portals** across 🇩🇪 🇦🇹 🇨🇭 🇪🇸 🇮🇹 🇵🇹 🇫🇷 for you (e.g. Immoscout,

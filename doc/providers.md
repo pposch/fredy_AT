@@ -21,7 +21,7 @@ platform into Fredy.
 | McMakler | Wg gesucht | |
 
 **🇩🇪 Germany · 🇦🇹 Austria · 🇨🇭 Switzerland** · BETTERHOMES
-**🇦🇹 Austria** · willhaben · Immoscout Österreich
+**🇦🇹 Austria** · willhaben · Immoscout Österreich · Kleinanzeigen AT (fredy-AT) · WG-Gesucht AT (fredy-AT)
 **🇨🇭 Switzerland** · Flatfox
 **🇪🇸 Spain · 🇮🇹 Italy · 🇵🇹 Portugal** · idealista
 **🇮🇹 Italy** · Subito · Tecnocasa · Tecnorete · Casa.it
@@ -224,8 +224,9 @@ how perfect the fingerprint is. The typical symptom: it works locally but you ge
 
 A **residential proxy** routes Fredy's browser through the internet connection of a real household,
 so the provider sees a "normal user" IP instead of a datacenter. For German portals, use a **German
-(DE) residential** (or mobile/4G) proxy. Plain VPNs and **datacenter proxies do not help** here,
-they share the same bad reputation as your server.
+(DE) residential** (or mobile/4G) proxy, for Austrian portals an **Austrian (AT) residential** one.
+Plain VPNs and **datacenter proxies do not help** here, they share the same bad reputation as your
+server.
 
 **Configure it** under **Administration → Execution → Proxy URL**. Supported formats:
 

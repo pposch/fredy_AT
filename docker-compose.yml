@@ -4,7 +4,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: ghcr.io/orangecoding/fredy
     environment:
       - NODE_ENV=production
     volumes:

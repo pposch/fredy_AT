@@ -4,11 +4,10 @@ on:
   push:
     branches:
       - 'master'
-    # '!*-pre.*' keeps the pre-release tags created by `yarn release:pre` out of the stable
-    # image - those are built from develop and belong in fredy-pre-release (see pre-release.yml).
+    # fredy-AT: only its own release tags (v*), not upstream's version tags that come along when
+    # syncing the fork.
     tags:
-      - '*'
-      - '!*-pre.*'
+      - 'v*'
 
 jobs:
   docker:
@@ -17,10 +16,11 @@ jobs:
       packages: write
     uses: ./.github/workflows/docker-build.yml
     with:
-      image_name: ${{ github.repository }}
-      # Reproduces the metadata-action defaults this workflow relied on before:
-      # master -> :master + :latest, release tag -> :<version>
+      # fredy-AT publishes its own image instead of upstream's.
+      image_name: pposch/fredy-at
+      # master -> :latest + :<short sha>, release tag v1.2.3 -> :1.2.3 + :1.2
       tags: |
-        type=ref,event=branch
-        type=ref,event=tag
         type=raw,value=latest,enable={{is_default_branch}}
+        type=sha,prefix=,format=short
+        type=semver,pattern={{version}}
+        type=semver,pattern={{major}}.{{minor}}
