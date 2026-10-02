@@ -118,5 +118,13 @@
   "bienici": {
     "url": "https://www.bienici.com/recherche/location/paris-75000/appartement",
     "enabled": true
+  },
+  "kleinanzeigenAt": {
+    "url": "https://www.kleinanzeigen.at/Immobilien/Wohnung-mieten-in-Wien",
+    "enabled": true
+  },
+  "wgGesuchtAt": {
+    "url": "https://www.wg-gesucht.at/wohnungen-in-Wien.1.2.1.0.html",
+    "enabled": true
   }
 }

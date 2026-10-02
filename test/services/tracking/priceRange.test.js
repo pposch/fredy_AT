@@ -160,8 +160,10 @@ const NO_RANGE_IN_URL = [
     'https://www.imaxx.de/immobilien/?post_type=immomakler_object&radius=1&vermarktungsart%5B0%5D=kauf&typ%5B0%5D=wohnung',
   ],
   ['inberlinwohnen', 'https://inberlinwohnen.de/wohnungsfinder/'],
+  ['kleinanzeigenAt', 'https://www.kleinanzeigen.at/Immobilien/Wohnung-mieten-in-Wien'],
   ['regionalimmobilien24', 'https://www.regionalimmobilien24.de/rostock/rostock/kaufen/haus/-/-/-/?rd=5'],
   ['wgGesucht', 'https://www.wg-gesucht.de/wg-zimmer-in-Duesseldorf.30.0.1.0.html'],
+  ['wgGesuchtAt', 'https://www.wg-gesucht.at/wohnungen-in-Wien.1.2.1.0.html'],
   ['willhaben', 'https://www.willhaben.at/iad/immobilien/mietwohnungen/wien'],
 ];
 

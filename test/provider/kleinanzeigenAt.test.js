@@ -13,7 +13,7 @@ import { launchBrowser, closeBrowser } from '../../lib/services/extractor/puppet
 const TEST_TIMEOUT = 120_000;
 
 describe('#kleinanzeigenAt testsuite()', () => {
-  provider.init(providerConfig.kleinanzeigenAt, []);
+  const runConfig = provider.createConfig(providerConfig.kleinanzeigenAt, []);
 
   let browser;
   let liveListings;
@@ -38,7 +38,7 @@ describe('#kleinanzeigenAt testsuite()', () => {
       };
 
       return await new Promise((resolve, reject) => {
-        const fredy = new Fredy(provider.config, mockedJob, provider.metaInformation.id, similarityCache, browser);
+        const fredy = new Fredy(runConfig, mockedJob, provider.metaInformation.id, similarityCache, browser);
         fredy.execute().then((listings) => {
           if (listings == null || listings.length === 0) {
             reject('Listings is empty!');
@@ -78,7 +78,7 @@ describe('#kleinanzeigenAt testsuite()', () => {
       async () => {
         if (!liveListings?.length) throw new Error('No listings from first test to enrich');
 
-        const enriched = await provider.config.fetchDetails(liveListings[0], browser);
+        const enriched = await runConfig.fetchDetails(liveListings[0], browser);
 
         expect(enriched).toBeTruthy();
         expect(enriched.link).toContain('https://www.kleinanzeigen.at/');

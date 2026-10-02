@@ -13,7 +13,7 @@ import { launchBrowser, closeBrowser } from '../../lib/services/extractor/puppet
 const TEST_TIMEOUT = 120_000;
 
 describe('#wgGesuchtAt testsuite()', () => {
-  provider.init(providerConfig.wgGesuchtAt, []);
+  const runConfig = provider.createConfig(providerConfig.wgGesuchtAt, []);
 
   let browser;
 
@@ -37,7 +37,7 @@ describe('#wgGesuchtAt testsuite()', () => {
       };
 
       return await new Promise((resolve, reject) => {
-        const fredy = new Fredy(provider.config, mockedJob, provider.metaInformation.id, similarityCache, browser);
+        const fredy = new Fredy(runConfig, mockedJob, provider.metaInformation.id, similarityCache, browser);
         fredy.execute().then((listings) => {
           if (listings == null || listings.length === 0) {
             reject('Listings is empty!');
